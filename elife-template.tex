@@ -149,7 +149,7 @@ To remedy this, we modified the model's output to predict, in addition to keypoi
 
 \subsection*{Stacked DenseNet is fast and robust}
 \label{subsec:models}
-We benchmarked our new model implementations against the models \citep{pereira2019fast} and \cite{mathis2018deeplabcut}. We find that our Stacked DenseNet model outperforms both the LEAP model \citep{pereira2019fast} and the DeepLabCut model \citep{mathis2018deeplabcut} in terms of speed while also achieving much higher accuracy than the LEAP model \citep{pereira2019fast} with similar accuracy to the DeepLabCut model (\citealt{mathis2018deeplabcut}; Figure \ref{fig:speed_accuracy_api}a). We found that both the Stacked Hourglass and Stacked DenseNet models outperformed the LEAP model \citep{pereira2019fast}. Notably our Stacked DenseNet model achieved approximately 2$\times$ faster inference speeds with 3$\times$ higher mean accuracy. Not only were our models’ average prediction error significantly improved, but also, importantly, the variance was lower—indicating that our models produced fewer extreme prediction errors. At $\tfrac{1}{4}\times$ resolution, our Stacked DenseNet model consistently achieved prediction accuracy nearly identical to the DeepLabCut model \citep{mathis2018deeplabcut} while running inference at nearly 2$\times$ the speed and using only $\sim$5$\%$ of the parameters—$\sim$1.5 million vs. $\sim$26 million. Detailed results of our model comparisons are shown in Figure \ref{fig:speed_accuracy_api}-supplement \ref{figsupp:model_posterior_comparisons}.
+We benchmarked our new model implementations against the models \citep{pereira2019fast} and \cite{mathis2018deeplabcut}. We find that our Stacked DenseNet model outperforms both the LEAP model \citep{pereira2019fast} and the DeepLabCut model \citep{mathis2018deeplabcut} in terms of speed while also achieving much higher accuracy than the LEAP model \citep{pereira2019fast} with similar accuracy to the DeepLabCut model (\citealt{mathis2018deeplabcut}; Figure \ref{fig:speed_accuracy_api}a). We found that both the Stacked Hourglass and Stacked DenseNet models outperformed the LEAP model \citep{pereira2019fast}. Notably our Stacked DenseNet model achieved approximately 2$\times$ faster inference speeds with 3$\times$ higher mean accuracy. Not only were our models’ average prediction error significantly improved, but also, importantly, the variance was lower—indicating that our models produced fewer extreme prediction errors. At $\tfrac{1}{4}\times$ resolution, our Stacked DenseNet model consistently achieved prediction accuracy nearly identical to the DeepLabCut model \citep{mathis2018deeplabcut} while running inference at nearly 2$\times$ the speed and using only $\sim$5$\%$ of the parameters—$\sim$1.5 million vs. $\sim$26 million. Detailed results of our model comparisons are shown in Figure \ref{fig:speed_accuracy_api}-Figure supplement \ref{figsupp:model_posterior_comparisons}.
 
 While the Stacked DenseNet model used for comparisons is already fast, inference speed could be further improved by using a $\tfrac{1}{8}\times$ output without much increase in error (Appendix \ref{app:figures} Figure \ref{fig:downsample_inference_speed}) or by further adjusting the hyperparameters to constrain the size of the model. Our Stacked Hourglass implementation followed closely behind the performance of our Stacked DenseNet model and the DeepLabCut model \citep{mathis2018deeplabcut} but consistently performed more poorly than our Stacked DenseNet model in terms of prediction accuracy, so we excluded this model from further analysis. We were also able to reproduce the results reported by \cite{pereira2019fast} that the LEAP model and the Stacked Hourglass model \citep{newell2016} have similar average prediction error for the fly dataset. However, we also find that the LEAP model \citep{pereira2019fast} has much higher variance, which suggests it is more prone to extreme prediction errors—a problem for further data analysis.
 
@@ -164,6 +164,8 @@ We also show that our Stacked DenseNet model achieves good generalization with f
 \caption{Our Stacked DenseNet model estimates posture at approximately 2$\times$—or greater—the speed of the LEAP model \citep{pereira2019fast} and the DeepLabCut model \citep{mathis2018deeplabcut} while also achieving similar accuracy to the DeepLabCut model \citep{mathis2018deeplabcut}—shown here as mean accuracy $(1 + \textrm{Euclidean error})^{-1}$ for our most challenging dataset of multiple interacting Grévy's zebras (\textit{E. grevyi}) recorded in the wild (\textbf{a}). See Figure \ref{fig:speed_accuracy_api} supplement \ref{figsupp:model_posterior_comparisons} for further details. Our software interface is designed to be straightforward but flexible. We include many options for expert users to customize model training with sensible default settings to make pose estimation as easy as possible for beginners. For example, training a model and running inference on new data requires writing only a few lines of code and specifying some basic settings (\textbf{b}).}
 \label{fig:speed_accuracy_api}
 \figsupp{Euclidean error distributions for each model across our three datasets. Letter-value plots (\textbf{left}) show the raw error distributions for each model. Violinplots of the posterior distributions for the mean and variance (\textbf{right}) show statistical differences between the error distributions. Overall the LEAP model \citep{pereira2019fast} was the worst performer on every dataset in terms of both mean and variance. Our Stacked Densenet model was the best performer for the fly dataset, while our Stacked DenseNet model and the DeepLabCut model \citep{mathis2018deeplabcut} both performed equally well on the locust and zebra datasets. The posteriors for the DeepLabCut model \citep{mathis2018deeplabcut} and our Stacked DenseNet model are highly overlapping for these datasets, which suggests they are not statistically discernible from one another. Our Stacked Hourglass model \citep{newell2016} performed equally to the DeepLabCut model \citep{mathis2018deeplabcut} and our Stacked DenseNet model for the locust dataset but performed slightly worse for the fly and zebra datasets.}{\includegraphics[width=\linewidth]{figures/model_posteriors_figure.pdf}}\label{figsupp:model_posterior_comparisons}
+\figdata{Raw prediction errors used for model comparisons in Figure \ref{fig:speed_accuracy_api}-Figure supplement \ref{figsupp:model_posterior_comparisons}. See "Methods" for details.}\label{figdata:model_comparisons}
+
 \end{fullwidth}
 \end{figure}
 
@@ -288,6 +290,9 @@ All procedures for collecting the zebra (\textit{E. grevyi}) dataset were review
 \includegraphics[width=0.60\linewidth]{figures/downsample_inference_speed.pdf}
 \caption{Our subpixel maxima algorithm increases speed without decreasing accuracy. Prediction accuracy on the fly dataset is maintained across downsampling configurations (\textbf{a}). Letter-value plots (\textbf{a-top}) show the raw error distributions for each configuration. Visualizations of the credible intervals (99\% highest-density region) of the posterior distributions for the mean and variance (\textbf{a-bottom}) illustrate statistical differences between the error distributions, where using subpixel maxima decreases both the mean and variance of the error distribution. Inference speed is fast and can be run in real-time on single images (batch size = 1) at $\sim$30-110Hz or offline (batch size = 100) upwards of 1000Hz (\textbf{b}). Plots show the inference speeds for our Stacked DenseNet model across downsampling configurations as well as the other models we tested for each of our datasets. }
 \label{fig:downsample_inference_speed}
+
+\figdata{Raw prediction errors for experiments in Appendix Figure \ref{fig:downsample_inference_speed}a. See "Methods" for details.}\label{figdata:downsampling}
+
 \end{fullwidth}
 \end{figure}
 
@@ -297,6 +302,10 @@ All procedures for collecting the zebra (\textit{E. grevyi}) dataset were review
 \includegraphics[width=0.76\linewidth]{figures/graph_error_figure.pdf}
 \caption{Predicting the multi-scale geometry of the posture graph reduces error. Letter-value plots (\textbf{top}) show the raw error distributions for each experiment. Visualizations of the posterior distributions for the mean and variance (\textbf{bottom}) show statistical differences between the error distributions. Predicting the posture graph decreases both the mean and variance of the error distribution.}
 \label{fig:graph_error_figure}
+
+\figdata{Raw prediction errors for experiments in Appendix Figure \ref{fig:graph_error_figure}. See "Methods" for details.}\label{figdata:graph_error}
+
+
 \end{fullwidth}
 \end{figure}
 
@@ -306,6 +315,11 @@ All procedures for collecting the zebra (\textit{E. grevyi}) dataset were review
 \includegraphics[width=0.8\linewidth]{figures/training_time_figure.pdf}
 \caption{Training time required for our Stacked DenseNet model, the DeepLabCut model \citep{mathis2018deeplabcut}, and the LEAP model \citep{pereira2019fast} (n=15 per model) using our zebra dataset. Boxplots and swarm plots (\textbf{left}) show the total training time to convergence (<0.001 improvement in validation loss for 50 epochs). Line plots (\textbf{right}) illustrate the Euclidean error of the validation set during training, where error bars show bootstrapped (n=1000) 99\% confidence intervals of the mean. Fully training models to convergence requires only a few hours of optimization (\textbf{left}) with reasonable accuracy reached after only 1 hour (\textbf{right}) for our Stacked DenseNet model.}
 \label{fig:training_time}
+
+\figdata{Total training time for each model in Appendix Figure \ref{fig:training_time}.}\label{figdata:train_time1}
+
+\figdata{Mean euclidean error as a function of training time for each model in Appendix Figure \ref{fig:training_time}.}\label{figdata:train_time2}
+
 \end{fullwidth}
 \end{figure}
 
@@ -315,6 +329,9 @@ All procedures for collecting the zebra (\textit{E. grevyi}) dataset were review
 \includegraphics[width=\linewidth]{figures/training_data_proportion_figure.pdf}
 \caption{A comparison of prediction accuracy with different numbers of training examples from our zebra dataset. The error distributions shown as letter-value plots (\textbf{top}) illustrate the Euclidean error for the remainder of the dataset not used for training---with a total of 900 labeled examples in the dataset. Line plots (\textbf{bottom}) show posterior credible intervals (99\% highest-density region) for the mean and variance of the error distributions. We tested our Stacked DenseNet model; the DeepLabCut model \citep{mathis2018deeplabcut} with transfer learning---i.e., with weights pretrained on ImageNet \citep{deng2009imagenet}; the same model without transfer learning---i.e., with randomly-initialized weights; and the LEAP model \citep{pereira2019fast}. Our Stacked DenseNet model achieves high accuracy using few training examples without the use the transfer learning. Using pretrained weights does slightly decrease overall prediction error for the DeepLabCut model \citep{mathis2018deeplabcut}, but the effect size is relatively small.}
 \label{fig:training_prop}
+
+\figdata{Raw prediction errors for experiments in Appendix Figure \ref{fig:training_prop}. See "Methods" for details.}\label{figdata:train_prop}
+
 \end{fullwidth}
 \end{figure}
 
@@ -452,6 +469,9 @@ These results demonstrate that our re-implementation of and modification to the 
 \figsupp{Plots of the temporal derivatives of the predicted output for Appendix \ref{app:implementation} Figure \ref{fig:dlc_comparison}-video \ref{videosupp:dlcsv1} comparing our implementation of the DeepLabCut model \citep{mathis2018deeplabcut} in DeepPoseKit vs. the original implementation from \cite{mathis2018deeplabcut, nath2018}. Note the many fast jumps in position for the original verison from \cite{mathis2018deeplabcut}, which indicates prediction errors. }{\includegraphics[width=\linewidth]{figures/dlc_dxtsplot.pdf}}\label{figsupp:dlc_dxtsplot}
 
 \videosupp{A video comparison of the tracking output of our implementation of the DeepLabCut model \citep{mathis2018deeplabcut} in DeepPoseKit vs. the original implementation from \cite{mathis2018deeplabcut, nath2018}. \url{https://youtu.be/YFmO5C0hUw4}}\label{videosupp:dlcsv1}
+
+\figdata{Raw prediction errors for our DeepLabCut model \citep{mathis2018deeplabcut} reimplemented in DeepPoseKit in Appendix \ref{app:implementation} Figure \ref{fig:dlc_comparison}. See "Methods" for details.}\label{figdata:dlc1}
+\figdata{Raw prediction errors for the original DeepLabCut model from \cite{mathis2018deeplabcut} in Appendix \ref{app:implementation} Figure \ref{fig:dlc_comparison}. See "Methods" for details.}\label{figdata:dlc2}
 
 \end{figure}
 
